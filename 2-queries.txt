@@ -1,0 +1,62 @@
+// (a)
+
+\project_{beer} \select_{bar = 'James Joyce Pub'} Serves;
+
+
+// (b)
+
+\project_{name, address} \select_{price < 2.25} (Bar \join \rename_{name, beer, price} Serves);
+
+
+// (c)
+
+\project_{name} \select_{drinker = 'Amy' and price <= 2.5} (Likes \join (Bar \join \rename_{name, beer, price} Serves));
+
+
+// (d)
+
+\select_{drinkerA < drinkerB} \project_{drinkerA, drinkerB} (\rename_{drinkerA, beer} Likes \join \rename_{drinkerB, beer} Likes);
+
+
+// (e)
+
+\project_{drinker} \select_{beer = 'Dixie'} Likes
+
+\diff
+
+\project_{drinker} (Frequents \join \select_{beer = 'Dixie'} Serves);
+
+
+// (f)
+
+\project_{drinker, bar} Frequents
+
+\diff 
+
+\project_{drinkerA, barA} 
+(\rename_{drinkerA, barA, timesA} Frequents \join_{drinkerA = drinkerB and timesA < timesB} \rename_{drinkerB, barB, timesB} Frequents);
+
+
+// (g)
+
+\rename_{drinker} \project_{name} Drinker
+
+\diff
+
+\project_{drinker}
+(\project_{drinker, bar} Frequents
+\diff
+\project_{drinker, bar} (Likes \join Serves));
+
+
+// (h)
+
+\rename_{drinker} \project_{name} Drinker
+
+\diff
+
+\project_{drinker}
+(\project_{drinker, bar} (Likes \join Serves)
+\diff
+\project_{drinker, bar} Frequents);
+
