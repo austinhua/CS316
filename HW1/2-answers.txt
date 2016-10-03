@@ -1,0 +1,75 @@
+
+RA: an interactive relational algebra interpreter
+Version 2.2b by Jun Yang (junyang@cs.duke.edu)
+http://www.cs.duke.edu/~junyang/ra/
+Type "\help;" for help
+
+Output schema: (beer varchar)
+-----
+Amstel
+Corona
+Dixie
+Erdinger
+-----
+Total number of rows: 4
+
+Output schema: (name varchar, address varchar)
+-----
+Talk of the Town|108 E. Main Street
+-----
+Total number of rows: 1
+
+Output schema: (name varchar)
+-----
+Talk of the Town
+-----
+Total number of rows: 1
+
+Output schema: (drinkera varchar, drinkerb varchar)
+-----
+Amy|Eve
+Coy|Dan
+Amy|Ben
+Ben|Eve
+Amy|Dan
+Dan|Eve
+Ben|Dan
+-----
+Total number of rows: 7
+
+Output schema: (drinker varchar)
+-----
+Coy
+-----
+Total number of rows: 1
+
+Output schema: (drinker varchar, bar varchar)
+-----
+Coy|The Edge
+Dan|Down Under Pub
+Dan|Satisfaction
+Dan|Talk of the Town
+Ben|Satisfaction
+Eve|James Joyce Pub
+Coy|Down Under Pub
+Amy|James Joyce Pub
+-----
+Total number of rows: 8
+
+Output schema: (drinker varchar)
+-----
+Ben
+Amy
+Eve
+Dan
+-----
+Total number of rows: 4
+
+Output schema: (drinker varchar)
+-----
+Dan
+-----
+Total number of rows: 1
+
+Bye!
+
