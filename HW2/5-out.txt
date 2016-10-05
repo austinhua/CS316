@@ -1,0 +1,160 @@
+-- Modify the CREATE TABLE statements as needed to add constraints.
+-- Do not otherwise change the column names or types.
+CREATE TABLE Species
+(name VARCHAR(256) NOT NULL PRIMARY KEY,
+ attack INTEGER NOT NULL CHECK (attack > 0),
+ defense INTEGER NOT NULL CHECK (defense > 0),
+ stamina INTEGER NOT NULL CHECK (stamina > 0),
+ evolves_from VARCHAR(256)
+);
+CREATE TABLE
+CREATE TABLE Move
+(name VARCHAR(256) NOT NULL PRIMARY KEY ,
+ damage INTEGER NOT NULL CHECK (damage >= 0),
+ cooldown FLOAT NOT NULL CHECK (cooldown >= 0),
+ type VARCHAR(8) NOT NULL CHECK (type IN ('quick', 'charged')),
+ energy INTEGER NOT NULL CHECK (energy >= 0)
+);
+CREATE TABLE
+CREATE TABLE Trainer
+(id INTEGER NOT NULL PRIMARY KEY,
+nickname VARCHAR(256) NOT NULL UNIQUE,
+ exp INTEGER NOT NULL CHECK (exp >= 0)
+);
+CREATE TABLE
+CREATE TABLE Pokemon
+(id INTEGER NOT NULL PRIMARY KEY,
+ name VARCHAR(256) NOT NULL,
+ level INTEGER NOT NULL CHECK (level > 0),
+ attack INTEGER NOT NULL CHECK (attack >= 0 and attack <=15),
+ defense INTEGER NOT NULL CHECK (defense >= 0 and defense <=15),
+ stamina INTEGER NOT NULL CHECK (stamina >= 0 and stamina <=15),
+ species VARCHAR(256) NOT NULL
+    REFERENCES Species(name),
+ quick_move VARCHAR(256) NOT NULL
+    REFERENCES Move(name),
+ charged_move VARCHAR(256) NOT NULL
+    REFERENCES Move(name),
+ trainer_id INTEGER
+    REFERENCES Trainer(id) CHECK ((trainer_id IS NULL and favorite IS NULL) or trainer_id IS NOT NULL ),
+ favorite CHAR(1) CHECK (trainer_id IS NULL or (trainer_id IS NOT NULL and favorite IN ('t', 'f')))
+);
+CREATE TABLE
+-- Using triggers, enforce that Pokemon.quick_move and
+-- Pokemon.charged_move indeed refer to moves of the correct types,
+-- respectively.
+CREATE FUNCTION TF_Pokemon_enhanced_move_ref() RETURNS TRIGGER AS $$
+BEGIN
+  -- YOUR IMPLEMENTATION GOES HERE
+  -- when changing moves of a pokemon, enforce that it still has a charge move and quick move
+  IF NEW.charged_move IN (Select name from Move where type='quick') THEN
+    RAISE EXCEPTION 'Cannot put a quick move into charge move slot';
+  END IF;
+  IF NEW.quick_move IN (Select name from Move where type='charged') THEN
+    RAISE EXCEPTION 'Cannot put a charge move into quick move slot';
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+CREATE FUNCTION
+CREATE TRIGGER TG_Pokemon_enhanced_move_ref
+  BEFORE INSERT OR UPDATE ON Pokemon
+  FOR EACH ROW
+  EXECUTE PROCEDURE TF_Pokemon_enhanced_move_ref();
+CREATE TRIGGER
+CREATE FUNCTION TF_Move_enhanced_move_ref() RETURNS TRIGGER AS $$
+BEGIN
+  -- YOUR IMPLEMENTATION GOES HERE
+  -- when changing type of a move, enforce that no pokemon reference that move with the previous type
+  IF (NEW.type = 'charged' and NEW.name IN (Select quick_move from Pokemon)) THEN
+    RAISE EXCEPTION 'Existing pokemon reference this move with previous type';
+  END IF;
+  IF (NEW.type = 'quick' and NEW.name IN (Select charged_move from Pokemon)) THEN
+    RAISE EXCEPTION 'Existing pokemon reference this move with previous type';
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+CREATE FUNCTION
+CREATE TRIGGER TG_Move_enhanced_move_ref
+  BEFORE UPDATE ON Move
+  FOR EACH ROW
+  EXECUTE PROCEDURE TF_Move_enhanced_move_ref();
+CREATE TRIGGER
+-- Some initial data to play with.  These INSERT statements should succeed.
+-- Do NOT modify this section.
+INSERT INTO Species VALUES('Charmander', 128, 108, 78, NULL);
+INSERT 0 1
+INSERT INTO Species VALUES('Charmeleon', 160, 140, 116, 'Charmander');
+INSERT 0 1
+INSERT INTO Species VALUES('Charizard', 212, 182, 156, 'Charmeleon');
+INSERT 0 1
+INSERT INTO Move VALUES('Ember', 10, 1.05, 'quick', 7);
+INSERT 0 1
+INSERT INTO Move VALUES('Fire Blast', 100, 4.1, 'charged', 100);
+INSERT 0 1
+INSERT INTO Move VALUES('Flamethrower', 55, 2.9, 'charged', 50);
+INSERT 0 1
+INSERT INTO Trainer VALUES(142, 'El Barto', 755437);
+INSERT 0 1
+INSERT INTO Pokemon VALUES(1, 'Fire6a11', 1, 15, 15, 15,
+                           'Charmander', 'Ember', 'Flamethrower',
+                           142, 't');
+INSERT 0 1
+INSERT INTO Pokemon VALUES(100, 'El Charizardo', 80, 15, 15, 15,
+                           'Charizard', 'Ember', 'Fire Blast',
+                           142, 't');
+INSERT 0 1
+-- Write an INSERT statement that fails because a Pokemon refers to a
+-- non-existent move.
+-- YOUR IMPLEMENTATION GOES HERE
+INSERT INTO Pokemon VALUES(2, 'NewPoke2', 1, 15, 15, 15, 'Charmeleon', 'Bubble', 'Hydro Pump', 142, 't');
+psql:5-create.sql:105: ERROR:  insert or update on table "pokemon" violates foreign key constraint "pokemon_quick_move_fkey"
+DETAIL:  Key (quick_move)=(Bubble) is not present in table "move".
+-- Write an INSERT statement that fails because of violating (b).
+-- YOUR IMPLEMENTATION GOES HERE
+INSERT INTO Trainer VALUES(111, 'El Barto', 12345);
+psql:5-create.sql:108: ERROR:  duplicate key value violates unique constraint "trainer_nickname_key"
+DETAIL:  Key (nickname)=(El Barto) already exists.
+-- Write two INSERT statements that fail because of violating
+-- constraints in (c) on Species and Pokemon, respectively.
+-- YOUR IMPLEMENTATION GOES HERE
+INSERT INTO Species VALUES('Bulbasaur', -5, -7, -10, NULL);
+psql:5-create.sql:112: ERROR:  new row for relation "species" violates check constraint "species_attack_check"
+DETAIL:  Failing row contains (Bulbasaur, -5, -7, -10, null).
+INSERT INTO Pokemon VALUES(3, 'NewPoke3', 1, 16, -1, 20, 'Charmeleon', 'Ember', 'Fire Blast', 142, 't');
+psql:5-create.sql:113: ERROR:  new row for relation "pokemon" violates check constraint "pokemon_attack_check"
+DETAIL:  Failing row contains (3, NewPoke3, 1, 16, -1, 20, Charmeleon, Ember, Fire Blast, 142, t).
+-- Write two UPDATE statements that fail because of violating the two
+-- cases under (d), respectively.
+-- YOUR IMPLEMENTATION GOES HERE
+UPDATE Pokemon SET trainer_id = NULL, favorite = 't' WHERE id = 1;
+psql:5-create.sql:117: ERROR:  new row for relation "pokemon" violates check constraint "pokemon_check"
+DETAIL:  Failing row contains (1, Fire6a11, 1, 15, 15, 15, Charmander, Ember, Flamethrower, null, t).
+UPDATE Pokemon SET trainer_id = 142, favorite = NULL WHERE id = 1;
+UPDATE 1
+-- Write an INSERT statement that fails because of violating (e).
+-- YOUR IMPLEMENTATION GOES HERE
+INSERT INTO Pokemon VALUES(4, 'NewPoke4', 1, 15, 15, 15, 'Charmeleon', 'Flamethrower', 'Ember', 142, 't');
+psql:5-create.sql:121: ERROR:  Cannot put a quick move into charge move slot
+-- Write an UPDATE Move statement that fails because of violating (e).
+-- YOUR IMPLEMENTATION GOES HERE
+UPDATE Move SET type='quick' WHERE name='Flamethrower';
+psql:5-create.sql:124: ERROR:  Existing pokemon reference this move with previous type
+-- Define a view that lists, for each Pokemon, its combat power (CP).
+CREATE VIEW PokemonCP(id, cp) AS
+-- REPLACE THE FOLLOWING WITH YOUR IMPLEMENTATION
+Select id, GREATEST(10, floor(0.1 * m * a * |/(d * s) )) from (
+  (Select id,
+  (Select attack from Species where Species.name = Pokemon.species) + Pokemon.attack a,
+  (Select defense from Species where Species.name = Pokemon.species) + Pokemon.defense d,
+  (Select stamina from Species where Species.name = Pokemon.species) + Pokemon.stamina s,
+  (0.095 ^ 2 * level) m from Pokemon )) cpview;
+CREATE VIEW
+Select * from PokemonCP;
+ id  |  cp  
+-----+------
+ 100 | 3008
+   1 |   13
+(2 rows)
+

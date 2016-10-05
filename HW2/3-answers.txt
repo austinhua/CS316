@@ -1,1 +1,99 @@
-3-queries.sql: No such file or directory
+-- (a) Find names of beers served at James Joyce Pub
+Select beer from Serves where bar = 'James Joyce Pub';
+   beer   
+----------
+ Amstel
+ Corona
+ Dixie
+ Erdinger
+(4 rows)
+
+-- (b) Find names and addresses of bars that serve some beer for less than $2.25. Don’t return duplicates.
+Select distinct name, address from Serves, Bar where Serves.bar = Bar.name and price < 2.25;
+       name       |      address       
+------------------+--------------------
+ Talk of the Town | 108 E. Main Street
+(1 row)
+
+-- (c) Find names of bars serving some beer Amy likes for no more than $2.50. Don’t return duplicates.
+Select distinct bar from Likes natural join Serves where price <= 2.5 and drinker = 'Amy';
+       bar        
+------------------
+ Talk of the Town
+(1 row)
+
+-- (d) Find pairs of drinkers who like the same beer.
+Select distinct l1.drinker, l2.drinker from Likes l1, Likes l2 where l1.beer = l2.beer and l1.drinker > l2.drinker;
+ drinker | drinker 
+---------+---------
+ Dan     | Coy
+ Dan     | Ben
+ Eve     | Dan
+ Eve     | Ben
+ Dan     | Amy
+ Ben     | Amy
+ Eve     | Amy
+(7 rows)
+
+-- (e) Find names of all drinkers who like Dixie but frequent none of the bars serving it.
+Select drinker from Likes l where beer = 'Dixie' and drinker not in
+	(Select drinker from Frequents f, Serves s where f.bar = s.bar and s.beer = 'Dixie');
+ drinker 
+---------
+ Coy
+(1 row)
+
+-- (f) For each drinker, show the bar that he or she frequents the most, along with the number of visits per week.
+-- If multiple bars tie for the most frequented by the drinker, list all of them. You need to list
+-- every drinker, even if this drinker does not frequent any bar (show NULL for bar and times per week
+-- in this case).
+Select drinker, bar, times_a_week from Drinker d left outer join Frequents f on d.name = f.drinker
+	where f.times_a_week >= ALL(select times_a_week from Frequents where drinker = f.drinker);
+ drinker |       bar        | times_a_week 
+---------+------------------+--------------
+ Amy     | James Joyce Pub  |            2
+ Ben     | Satisfaction     |            2
+ Coy     | Down Under Pub   |            1
+ Coy     | The Edge         |            1
+ Dan     | Down Under Pub   |            2
+ Dan     | Satisfaction     |            2
+ Dan     | Talk of the Town |            2
+ Eve     | James Joyce Pub  |            2
+(8 rows)
+
+-- (g) Find names of all drinkers who frequent only those bars that serve some beers they like.
+(Select name from Drinker) except
+	(Select drinker from Frequents f where not exists (Select * from Likes l, Serves s where f.bar = s.bar and l.drinker = f.drinker and l.beer = s.beer));
+ name 
+------
+ Amy
+ Ben
+ Eve
+ Dan
+(4 rows)
+
+-- (h) Find names of all drinkers who frequent every bar that serves some beers they like.
+Select name from Drinker except
+	(Select drinker from Likes l, Serves s where l.beer = s.beer and not exists (Select * from Frequents where bar = s.bar and drinker = l.drinker));
+ name 
+------
+ Dan
+(1 row)
+
+-- (i) For each bar, find the total number of drinkers who frequent it, as well as the average price of beers
+-- it serves. Sort the output by the number of drinkers (in descending order). You need to list every bar,
+-- even if it is not frequented by anyone (show 0 as the total number of drinkers in this case) or serves
+-- no beers (show NULL as average price in this case).
+Select name, count, avg from
+	(Select name, count(distinct drinker) from Bar left outer join Frequents on name = bar group by name) BF natural join
+	(Select name, avg(price) from Bar left outer join Serves on name = bar group by name) BS
+	order by 2 DESC;
+       name       | count |        avg         
+------------------+-------+--------------------
+ James Joyce Pub  |     4 | 3.1875000000000000
+ Down Under Pub   |     2 | 2.6666666666666667
+ Satisfaction     |     2 | 2.6500000000000000
+ Talk of the Town |     2 | 2.3500000000000000
+ The Edge         |     2 | 2.7500000000000000
+(5 rows)
+
