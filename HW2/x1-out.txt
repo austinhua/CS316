@@ -1,0 +1,144 @@
+-- Modify the CREATE TABLE statements as needed to add constraints.
+-- Do not otherwise change the column names or types.
+CREATE TABLE Species
+(name VARCHAR(256) NOT NULL,
+ attack INTEGER NOT NULL,
+ defense INTEGER NOT NULL,
+ stamina INTEGER NOT NULL,
+ evolves_from VARCHAR(256)
+);
+CREATE TABLE
+CREATE TABLE Move
+(name VARCHAR(256) NOT NULL,
+ damage INTEGER NOT NULL CHECK (damage >= 0),
+ cooldown FLOAT NOT NULL CHECK (cooldown >= 0),
+ type VARCHAR(8) NOT NULL CHECK (type IN ('quick', 'charged')),
+ energy INTEGER NOT NULL CHECK (energy >= 0)
+);
+CREATE TABLE
+CREATE TABLE Trainer
+(id INTEGER NOT NULL,
+ nickname VARCHAR(256) NOT NULL,
+ exp INTEGER NOT NULL CHECK (exp >= 0)
+);
+CREATE TABLE
+CREATE TABLE Pokemon
+(id INTEGER NOT NULL,
+ name VARCHAR(256) NOT NULL,
+ level INTEGER NOT NULL CHECK (level > 0),
+ attack INTEGER NOT NULL,
+ defense INTEGER NOT NULL,
+ stamina INTEGER NOT NULL,
+ species VARCHAR(256) NOT NULL,
+ quick_move VARCHAR(256) NOT NULL,
+ charged_move VARCHAR(256) NOT NULL,
+ trainer_id INTEGER,
+ favorite CHAR(1)
+);
+CREATE TABLE
+-- Extra Credit X2, INSERT/UPDATE statements below
+CREATE FUNCTION TF_Species_evolution_restriction() RETURNS TRIGGER AS $$
+BEGIN
+  IF EXISTS (
+    WITH RECURSIVE Evolution(pre, post) AS
+      ((SELECT s1.name, s2.name FROM Species s1, Species s2 where s1.name = s2.evolves_from)
+      UNION
+      (SELECT e.pre, s.name FROM Evolution e, Species s WHERE e.post = s.evolves_from))
+    SELECT * FROM Evolution WHERE pre = post
+  ) THEN
+    RAISE EXCEPTION 'Invalid change, species cannot evolve from itself';
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+CREATE FUNCTION
+CREATE TRIGGER TG_Species_evolution_restriction
+  AFTER INSERT OR UPDATE ON Species
+  FOR EACH ROW
+  EXECUTE PROCEDURE TF_Species_evolution_restriction();
+CREATE TRIGGER
+-- Using triggers, enforce that Pokemon.quick_move and
+-- Pokemon.charged_move indeed refer to moves of the correct types,
+-- respectively.
+CREATE FUNCTION TF_Pokemon_enhanced_move_ref() RETURNS TRIGGER AS $$
+BEGIN
+  -- YOUR IMPLEMENTATION GOES HERE
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+CREATE FUNCTION
+CREATE TRIGGER TG_Pokemon_enhanced_move_ref
+  BEFORE INSERT OR UPDATE ON Pokemon
+  FOR EACH ROW
+  EXECUTE PROCEDURE TF_Pokemon_enhanced_move_ref();
+CREATE TRIGGER
+CREATE FUNCTION TF_Move_enhanced_move_ref() RETURNS TRIGGER AS $$
+BEGIN
+  -- YOUR IMPLEMENTATION GOES HERE
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+CREATE FUNCTION
+CREATE TRIGGER TG_Move_enhanced_move_ref
+  BEFORE UPDATE ON Move
+  FOR EACH ROW
+  EXECUTE PROCEDURE TF_Move_enhanced_move_ref();
+CREATE TRIGGER
+-- Some initial data to play with.  These INSERT statements should succeed.
+-- Do NOT modify this section.
+INSERT INTO Species VALUES('Charmander', 128, 108, 78, NULL);
+INSERT 0 1
+INSERT INTO Species VALUES('Charmeleon', 160, 140, 116, 'Charmander');
+INSERT 0 1
+INSERT INTO Species VALUES('Charizard', 212, 182, 156, 'Charmeleon');
+INSERT 0 1
+INSERT INTO Move VALUES('Ember', 10, 1.05, 'quick', 7);
+INSERT 0 1
+INSERT INTO Move VALUES('Fire Blast', 100, 4.1, 'charged', 100);
+INSERT 0 1
+INSERT INTO Move VALUES('Flamethrower', 55, 2.9, 'charged', 50);
+INSERT 0 1
+INSERT INTO Trainer VALUES(142, 'El Barto', 755437);
+INSERT 0 1
+INSERT INTO Pokemon VALUES(1, 'Fire6a11', 1, 15, 15, 15,
+                           'Charmander', 'Ember', 'Flamethrower',
+                           142, 't');
+INSERT 0 1
+INSERT INTO Pokemon VALUES(100, 'El Charizardo', 80, 15, 15, 15,
+                           'Charizard', 'Ember', 'Fire Blast',
+                           142, 't');
+INSERT 0 1
+-- X2 INSERT and UPDATE statments
+INSERT INTO Species VALUES('Squirtle', 128, 108, 78, 'Squirtle');
+psql:x1-create.sql:109: ERROR:  Invalid change, species cannot evolve from itself
+UPDATE Species SET evolves_from = 'Charizard' WHERE name = 'Charmander';
+psql:x1-create.sql:110: ERROR:  Invalid change, species cannot evolve from itself
+-- Write an INSERT statement that fails because a Pokemon refers to a
+-- non-existent move.
+-- YOUR IMPLEMENTATION GOES HERE
+-- Write an INSERT statement that fails because of violating (b).
+-- YOUR IMPLEMENTATION GOES HERE
+-- Write two INSERT statements that fail because of violating
+-- constraints in (c) on Species and Pokemon, respectively.
+-- YOUR IMPLEMENTATION GOES HERE
+-- Write two UPDATE statements that fail because of violating the two
+-- cases under (d), respectively.
+-- YOUR IMPLEMENTATION GOES HERE
+-- Write an INSERT statement that fails because of violating (e).
+-- YOUR IMPLEMENTATION GOES HERE
+-- Write an UPDATE Move statement that fails because of violating (e).
+-- YOUR IMPLEMENTATION GOES HERE
+-- Define a view that lists, for each Pokemon, its combat power (CP).
+CREATE VIEW PokemonCP(id, cp) AS
+-- REPLACE THE FOLLOWING WITH YOUR IMPLEMENTATION
+SELECT id, 0
+FROM Pokemon;
+CREATE VIEW
+SELECT * FROM PokemonCP;
+ id  | cp 
+-----+----
+   1 |  0
+ 100 |  0
+(2 rows)
+
