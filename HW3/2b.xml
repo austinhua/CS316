@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<person birthday="1955-11-30" gender="M" id="B001135" name="Richard Burr">
+            <role district="5" enddate="1997-01-03" party="Republican" startdate="1995-01-04"
+         state="NC"
+         type="rep"/>
+            <role district="5" enddate="1999-01-03" party="Republican" startdate="1997-01-07"
+         state="NC"
+         type="rep"/>
+            <role district="5" enddate="2001-01-03" party="Republican" startdate="1999-01-06"
+         state="NC"
+         type="rep"/>
+            <role district="5" enddate="2003-01-03" party="Republican" startdate="2001-01-03"
+         state="NC"
+         type="rep"/>
+            <role district="5" enddate="2005-01-03" party="Republican" startdate="2003-01-07"
+         state="NC"
+         type="rep"/>
+            <role enddate="2011-01-03" party="Republican" startdate="2005-01-04" state="NC"
+         type="sen"/>
+            <role current="1" enddate="2017-01-03" party="Republican" startdate="2011-01-05"
+         state="NC"
+         type="sen"/>
+        </person>

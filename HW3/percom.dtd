@@ -1,0 +1,11 @@
+<!ELEMENT congress (house, senate)>
+<!ELEMENT house (person+)>
+<!ELEMENT senate (person+)>
+<!ELEMENT person (committee*)>
+<!ATTLIST person name CDATA #REQUIRED>
+<!ELEMENT committee (subcommittee*)>
+<!ATTLIST committee name CDATA #REQUIRED>
+<!ATTLIST committee role CDATA #REQUIRED>
+<!ELEMENT subcommittee EMPTY>
+<!ATTLIST subcommittee role CDATA #REQUIRED>
+<!ATTLIST subcommittee name CDATA #REQUIRED>

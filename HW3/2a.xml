@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<person birthday="1940-08-17" gender="M" id="P000523" name="David E. Price">
+            <role district="4" enddate="1989-01-03" party="Democrat" startdate="1987-01-06"
+         state="NC"
+         type="rep"/>
+            <role district="4" enddate="1991-01-03" party="Democrat" startdate="1989-01-03"
+         state="NC"
+         type="rep"/>
+            <role district="4" enddate="1993-01-03" party="Democrat" startdate="1991-01-03"
+         state="NC"
+         type="rep"/>
+            <role district="4" enddate="1995-01-03" party="Democrat" startdate="1993-01-05"
+         state="NC"
+         type="rep"/>
+            <role district="4" enddate="1999-01-03" party="Democrat" startdate="1997-01-07"
+         state="NC"
+         type="rep"/>
+            <role district="4" enddate="2001-01-03" party="Democrat" startdate="1999-01-06"
+         state="NC"
+         type="rep"/>
+            <role district="4" enddate="2003-01-03" party="Democrat" startdate="2001-01-03"
+         state="NC"
+         type="rep"/>
+            <role district="4" enddate="2005-01-03" party="Democrat" startdate="2003-01-07"
+         state="NC"
+         type="rep"/>
+            <role district="4" enddate="2007-01-03" party="Democrat" startdate="2005-01-04"
+         state="NC"
+         type="rep"/>
+            <role district="4" enddate="2009-01-03" party="Democrat" startdate="2007-01-04"
+         state="NC"
+         type="rep"/>
+            <role district="4" enddate="2011-01-03" party="Democrat" startdate="2009-01-06"
+         state="NC"
+         type="rep"/>
+            <role district="4" enddate="2013-01-03" party="Democrat" startdate="2011-01-05"
+         state="NC"
+         type="rep"/>
+            <role district="4" enddate="2015-01-03" party="Democrat" startdate="2013-01-03"
+         state="NC"
+         type="rep"/>
+            <role current="1" district="4" enddate="2017-01-03" party="Democrat"
+         startdate="2015-01-06"
+         state="NC"
+         type="rep"/>
+        </person>
+<person birthday="1954-10-08" gender="M" id="P000591" name="Tom Price">
+            <role district="6" enddate="2007-01-03" party="Republican" startdate="2005-01-04"
+         state="GA"
+         type="rep"/>
+            <role district="6" enddate="2009-01-03" party="Republican" startdate="2007-01-04"
+         state="GA"
+         type="rep"/>
+            <role district="6" enddate="2011-01-03" party="Republican" startdate="2009-01-06"
+         state="GA"
+         type="rep"/>
+            <role district="6" enddate="2013-01-03" party="Republican" startdate="2011-01-05"
+         state="GA"
+         type="rep"/>
+            <role district="6" enddate="2015-01-03" party="Republican" startdate="2013-01-03"
+         state="GA"
+         type="rep"/>
+            <role current="1" district="6" enddate="2017-01-03" party="Republican"
+         startdate="2015-01-06"
+         state="GA"
+         type="rep"/>
+        </person>
