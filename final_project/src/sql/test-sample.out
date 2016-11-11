@@ -1,0 +1,53 @@
+--Query to get the top 5 ratings from each user:
+SELECT uid, tid, rating FROM user, ratings AS r1 WHERE uid = r1.uid ORDER BY rating DESC LIMIT 5;
+ uid |          tid           | rating 
+-----+------------------------+--------
+   3 | West Union             |      5
+   1 | Perkins                |      5
+  10 | Cameron Indoor Stadium |      5
+   4 | Rubenstein             |      4
+  11 | Link                   |      3
+(5 rows)
+
+--Query to find the number of times each place has been tagged:
+SELECT tid, COUNT(tag) FROM tags GROUP BY tid;
+          tid           | count 
+------------------------+-------
+ Pitchforks             |     1
+ Link                   |     1
+ Bryan Center           |     1
+ West Union             |     1
+ Cameron Indoor Stadium |     1
+ Bolt                   |     1
+ Perkins                |     3
+(7 rows)
+
+--Query to get the number of total ratings given by each user:
+SELECT uid, COUNT(rating) FROM user, ratings AS r1 WHERE uid = r1.uid GROUP BY uid;
+ uid | count 
+-----+-------
+   6 |     1
+  11 |     1
+   4 |     1
+   5 |     1
+   1 |     1
+   2 |     1
+   3 |     1
+  10 |     1
+(8 rows)
+
+--Query to get the most subscribed to places:
+SELECT tid, COUNT(uid) FROM directory AS d1, subscribes AS s1 WHERE d1.category = s1.category GROUP BY tid;
+          tid           | count 
+------------------------+-------
+ Pitchforks             |     4
+ Link                   |     1
+ Bryan Center           |     4
+ Rubenstein             |     1
+ West Union             |     1
+ Cameron Indoor Stadium |     2
+ ABP                    |     4
+ Bolt                   |     2
+ Perkins                |     1
+(9 rows)
+
